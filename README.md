@@ -8,7 +8,7 @@ TODO: Describe the installation process
 
 ## Usage
 
-TODO: Write usage instructions
+g++ timber.cpp -o timber.bin -lpanel -lncurses -lmenu -lform
 
 ## Contributing
 
