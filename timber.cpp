@@ -12,6 +12,7 @@
 
 #include "CCadena.h"
 #include "ListaAb.h"
+#include "DobleEnlace.h"
 
 #include <string>
 #include <fstream>
@@ -19,6 +20,9 @@
 using namespace std;
 // Lista output
 std::string lista_output = "";
+
+Lista<Cadena> ListaCad;
+lista<int> iLista1;
 
 // Definided by panel hide.
 typedef struct _PANEL_DATA {
@@ -69,6 +73,8 @@ void win_show(WINDOW *win, char *label, int label_color);
 void print_in_middle(WINDOW *win, int starty, int startx, int width, char *string, chtype color);
 
 WINDOW *charge_lista_win(WINDOW * local_win);
+WINDOW *charge_listad_win(WINDOW * local_win);
+WINDOW *charge_welcome_win(WINDOW * local_win);
 FORM *create_form_ccadena(const char *cadena_dat, const char *cadena_dir);
 static char* trim_whitespaces(char *str);
 
@@ -118,9 +124,10 @@ int main()
   /* Update the stacking order. 2nd panel will be on top */
   update_panels();
 
+  my_wins[6] = charge_welcome_win(my_wins[6]);
   while((ch = wgetch(timber_menu_win)) != KEY_F(1))
   {
-    //printw("test ch = %d",ch);
+
     switch(ch)
     {
       case KEY_DOWN:
@@ -167,6 +174,7 @@ int main()
 
 		  break;
       default: {
+          //my_wins[6] = charge_welcome_win(my_wins[6]);
           mvprintw(0, 50, "Item selected is : ");
         //break;
       }
@@ -310,6 +318,57 @@ void print_in_middle(WINDOW *win, int starty, int startx, int width, char *strin
         refresh();
 }
 
+WINDOW *charge_welcome_win(WINDOW * local_win){
+  int field_num = 3;
+  FIELD *field[field_num];
+  FORM  *my_form;
+  int ch, rows, cols, height=0, width=0;
+  int reserv_to_cadena=4;
+
+  //getmaxyx(local_win, height, width);
+
+  /* (numero de lineas, ancho o characters, altura, ) */
+  //field[0] = new_field(2, width-1, reserv_to_cadena, 1, 8, 8);
+  field[0] = new_field(1, 24, 1, 1, 8, 8);
+  field[1] = new_field(1, 0, 2, 1, 8, 8);
+  field[2] = new_field(2, 9, 4, 1, 8, 8);
+
+  for (int i=0; field[i]; i++){
+    /* Set field options */
+  	set_field_back(field[i], A_UNDERLINE);
+  	field_opts_off(field[i], O_AUTOSKIP); /* Don't go to next field when this */
+  }
+
+  /* SET of LABELS */
+  set_field_buffer(field[0], 0,"Welcome to Timber lab.");
+  //field_opts_off(field[0], O_ACTIVE); /* This field is a static label */
+  set_field_just(field[0], JUSTIFY_CENTER); /* Center Justification */
+
+  /* SET of LABELS */
+  set_field_buffer(field[2], 0,"TEXT---- o el README");
+  //field_opts_off(field[1], O_ACTIVE); /* This field is a static label */
+  set_field_just(field[2], JUSTIFY_CENTER); /* Center Justification */
+
+  /* Create the form and post it */
+  my_form = new_form(field);
+
+  /* Calculate the area required for the form */
+  scale_form(my_form, &rows, &cols);
+
+  //keypad(local_win, TRUE);
+
+  /* Set main window and sub window */
+  set_form_win(my_form, local_win);
+  set_form_sub(my_form, derwin(local_win, rows, cols,3,1));
+
+  //mvprintw(4, 10, "Value 1:");
+  //post_form(my_form_cadena);
+  post_form(my_form);
+  wrefresh(local_win);
+
+  return local_win;
+}
+
 WINDOW *charge_lista_win(WINDOW * local_win){
   int field_num = 8;
   FIELD *field[field_num];
@@ -350,18 +409,19 @@ WINDOW *charge_lista_win(WINDOW * local_win){
   field_opts_off(field[4], O_ACTIVE);
   /* Initialize Data Estructures */
   // Declaraci�n de una lista de cadenas:
-  Lista<Cadena> ListaCad;
 
-  // Inserci�n de algunos valores, creando una lista ordenada:
-  ListaCad.Insertar("beta");
-  ListaCad.Insertar("delta");
-  ListaCad.Insertar("delta");
-  ListaCad.Insertar("gamma");
-  ListaCad.Insertar("delta");
-  ListaCad.Insertar("epsilon");
-  ListaCad.Insertar("sigma");
-  ListaCad.Insertar("alfa");
-
+  if(ListaCad.Vacia())
+  {
+      // Inserci�n de algunos valores, creando una lista ordenada:
+      ListaCad.Insertar("beta");
+      ListaCad.Insertar("delta");
+      ListaCad.Insertar("delta");
+      ListaCad.Insertar("gamma");
+      ListaCad.Insertar("delta");
+      ListaCad.Insertar("epsilon");
+      ListaCad.Insertar("sigma");
+      ListaCad.Insertar("alfa");
+  }
   //lista_output = "";
   //ListaCad.ParaCada(Mostrar);
   //set_field_buffer(field[1], 0,&lista_output[0]);
@@ -423,6 +483,140 @@ WINDOW *charge_lista_win(WINDOW * local_win){
           set_field_buffer(field[5], 0,"");
         }
         lista_output = "";
+        ListaCad.ParaCada(Mostrar);
+        set_field_buffer(field[1], 0, &lista_output[0]);
+      break;
+			default:
+				/* If this is a normal character, it gets */
+				/* Printed				  */
+				form_driver(my_form, ch);
+
+			break;
+		}
+    lista_output = "";
+    ListaCad.ParaCada(Mostrar);
+    set_field_buffer(field[1], 0, &lista_output[0]);
+    update_panels();
+    doupdate();
+	}
+
+  return local_win;
+}
+
+WINDOW *charge_listad_win(WINDOW * local_win){
+  int field_num = 8;
+  FIELD *field[field_num];
+	FORM  *my_form;
+  int ch, rows, cols, height=0, width=0;
+
+  getmaxyx(local_win, height, width);
+  /* Initialize the fields */
+  int reserv_to_cadena=4;
+  /* (numero de lineas, ancho o characters, altura, ) */
+  //field[0] = new_field(2, width-1, reserv_to_cadena, 1, 8, 8);
+  field[0] = new_field(1, 27, 1, 1, 8, 8);
+  field[1] = new_field(reserv_to_cadena, width-4, 2, 1, 8, 8);
+  field[2] = new_field(1, 9,  reserv_to_cadena+4, 1, 8, 8);
+  field[3] = new_field(1, 20, reserv_to_cadena+6, 1, 8, 8);
+  field[4] = new_field(1, 9, reserv_to_cadena+8, 1, 8, 8);
+  field[5] = new_field(1, 20, reserv_to_cadena+10, 1, 8, 8);
+  field[6] = new_field(1, 20, reserv_to_cadena+12, 1, 8, 8);
+  field[7] = NULL;
+
+  for (int i=0; field[i]; i++){
+    /* Set field options */
+  	set_field_back(field[i], A_UNDERLINE);
+  	field_opts_off(field[i], O_AUTOSKIP); /* Don't go to next field when this */
+  }
+
+  /* SET of LABELS */
+  set_field_buffer(field[0], 0,"Lista Simplemente Enlazada:");
+  field_opts_off(field[0], O_ACTIVE); /* This field is a static label */
+  set_field_just(field[0], JUSTIFY_CENTER); /* Center Justification */
+  /* Field for show the lists */
+  field_opts_off(field[1], O_ACTIVE); /* This field is a static label */
+  //set_field_just(field[0], JUSTIFY_CENTER); /* Center Justification */
+  /* Common LABELS */
+  set_field_buffer(field[2], 0,"Insertar:");
+  field_opts_off(field[2], O_ACTIVE);
+  set_field_buffer(field[4], 0,"Eliminar:");
+  field_opts_off(field[4], O_ACTIVE);
+  /* Initialize Data Estructures */
+  // Declaraci�n de una lista de cadenas:
+
+  if(iLista1.ListaVacia())
+  {
+      // Inserci�n de algunos valores, creando una lista ordenada:
+      iLista1.Insertar(10);
+      iLista1.Insertar(20);
+      iLista1.Insertar(30);
+      iLista1.Insertar(40);
+      iLista1.Insertar(50);
+      iLista1.Insertar(60);
+      iLista1.Insertar(70);
+      iLista1.Insertar(80);
+  }
+  //lista_output = "";
+  //ListaCad.ParaCada(Mostrar);
+  //set_field_buffer(field[1], 0,&lista_output[0]);
+
+  /* Create the form and post it */
+  my_form = new_form(field);
+
+  /* Calculate the area required for the form */
+  scale_form(my_form, &rows, &cols);
+
+  keypad(local_win, TRUE);
+
+  /* Set main window and sub window */
+  set_form_win(my_form, local_win);
+  set_form_sub(my_form, derwin(local_win, rows, cols,3,1));
+
+  //mvprintw(4, 10, "Value 1:");
+  //post_form(my_form_cadena);
+  post_form(my_form);
+  wrefresh(local_win);
+
+  mvprintw(LINES - 2, 0, "Use UP, DOWN arrow keys to switch between fields");
+  refresh();
+
+  /* Loop through to get user requests */
+	while((ch = wgetch(local_win)) != KEY_F(1))
+	{
+    lista_output = "";
+    ListaCad.ParaCada(Mostrar);
+    //set_field_fore(field[1], COLOR_PAIR(2));
+    set_field_buffer(field[1], 0, &lista_output[0]);
+    printw("Debug: ch = %d",ch);
+    switch(ch)
+		{	case KEY_DOWN:
+				/* Go to next field */
+				form_driver(my_form, REQ_NEXT_FIELD);
+				/* Go to the end of the present buffer */
+				/* Leaves nicely at the last character */
+				form_driver(my_form, REQ_END_LINE);
+				break;
+			case KEY_UP:
+				/* Go to previous field */
+				form_driver(my_form, REQ_PREV_FIELD);
+				form_driver(my_form, REQ_END_LINE);
+				break;
+      case 10:
+        // Or the current field buffer won't be sync with what is displayed
+        form_driver(my_form, REQ_NEXT_FIELD);
+        form_driver(my_form, REQ_PREV_FIELD);
+        move(LINES-3, 2);
+
+        //printw("%s", trim_whitespaces(field_buffer(field[3], 0)));
+        if (strlen(trim_whitespaces(field_buffer(field[3], 0))) != 0 ){
+          iLista1.Insertar(atoi(trim_whitespaces(field_buffer(field[3], 0))));
+          set_field_buffer(field[3], 0,"");
+        }
+        if (strlen(trim_whitespaces(field_buffer(field[5], 0))) != 0 ){
+          iLista1.Borrar(atoi(trim_whitespaces(field_buffer(field[5], 0))));
+          set_field_buffer(field[5], 0,"");
+        }
+        //lista_output = "";
         ListaCad.ParaCada(Mostrar);
         set_field_buffer(field[1], 0, &lista_output[0]);
       break;
