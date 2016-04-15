@@ -21,7 +21,10 @@ g++ timber.cpp -o timber.bin -lpanel -lncurses -lmenu -lform
 
 ## History
 
-160415: First workshop on ESTDA11.
+### 160415: First workshop on ESTDA11.
+Second window:
+"Se tiene cargado en memoria dos listas doblemente ligadas con información entera y positiva. Crear un programa en C++ que permita indicar si en la segunda lista aparece o no el mayor valor de los almacenados en la primera lista."
+![Second window test.](/images/DobleListaTaller1_1.png)
 
 ## Credits
 
