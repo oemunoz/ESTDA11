@@ -22,9 +22,14 @@ using namespace std;
 std::string lista_output = "";
 std::string listad1_output = "";
 std::string listad2_output = "";
+std::string numero_mayoryexiste = "";
+
 
 Lista<Cadena> ListaCad;
+
 lista<Cadena> iLista1;
+lista<Cadena> iLista2;
+int numero_mayor_iLista1 = -1;
 
 // Definided by panel hide.
 typedef struct _PANEL_DATA {
@@ -44,18 +49,51 @@ void Mostrar(DATO &d)
 template<class TIPO>
 void Mostrard1(TIPO &d)
 {
+  if(listad1_output.empty())
+    listad1_output.append("lista1:|");
+  else
+    listad1_output.append("|<->|");
   listad1_output.append(d.Lee());
-  listad1_output.append("|<->|");
-  //printw(":%s",d.Lee());
+
+}
+
+template<class TIPO>
+void Mayord1(TIPO &d)
+{
+  if (atoi(d.Lee())){
+    if(atoi(d.Lee()) > numero_mayor_iLista1)
+      numero_mayor_iLista1 = atoi(d.Lee());
+  }
 }
 
 template<class TIPO>
 void Mostrard2(TIPO &d)
 {
+  if(listad2_output.empty())
+    listad2_output.append("lista2:|");
+  else
+    listad2_output.append("|<->|");
   listad2_output.append(d.Lee());
-  listad2_output.append("|<->|");
-  //printw(":%s",d.Lee());
 }
+
+template<class TIPO>
+void Buscar(TIPO &d)
+{
+  if (atoi(d.Lee())){
+    if(atoi(d.Lee()) == numero_mayor_iLista1){
+      //numero_mayor_iLista1 = atoi(d.Lee());
+      numero_mayoryexiste.append(" y el numero ");
+      numero_mayoryexiste.append(d.Lee());
+      numero_mayoryexiste.append(" existe en la lista2");
+      //numero_mayoryexiste.append(":");
+    }
+
+    if (numero_mayor_iLista1 == -1){
+      numero_mayoryexiste.append("El numero no existe en la lista2");
+    }
+  }
+}
+
 
 /*template<class DATO>
 FIELD *toMostrar(DATO &d)
@@ -522,6 +560,8 @@ WINDOW *charge_lista_win(WINDOW * local_win){
 }
 
 WINDOW *charge_listad_win(WINDOW * local_win){
+  std::string resultado_output = "";
+  std::ostringstream temp;
   int field_num = 8;
   FIELD *field[field_num];
 	FORM  *my_form;
@@ -534,12 +574,16 @@ WINDOW *charge_listad_win(WINDOW * local_win){
   //field[0] = new_field(2, width-1, reserv_to_cadena, 1, 8, 8);
   field[0] = new_field(1, 27, 1, 1, 8, 8);
   field[1] = new_field(reserv_to_cadena, width-4, 2, 1, 8, 8);
-  field[2] = new_field(1, 9,  reserv_to_cadena+4, 1, 8, 8);
-  field[3] = new_field(1, 20, reserv_to_cadena+6, 1, 8, 8);
-  field[4] = new_field(1, 9, reserv_to_cadena+8, 1, 8, 8);
-  field[5] = new_field(1, 20, reserv_to_cadena+10, 1, 8, 8);
+  field[2] = new_field(reserv_to_cadena, width-4,  reserv_to_cadena+3, 1, 8, 8);
+
+  field[3] = new_field(1, 9, reserv_to_cadena+7, 1, 8, 8);
+  field[4] = new_field(1, 20, reserv_to_cadena+8, 1, 8, 8);
+  field[5] = new_field(1, 9, reserv_to_cadena+11, 1, 8, 8);
+
   field[6] = new_field(1, 20, reserv_to_cadena+12, 1, 8, 8);
-  field[7] = NULL;
+
+  field[7] = new_field(1, 77, reserv_to_cadena+6, 1, 8, 8);
+  field[8] = NULL;
 
   for (int i=0; field[i]; i++){
     /* Set field options */
@@ -548,17 +592,20 @@ WINDOW *charge_listad_win(WINDOW * local_win){
   }
 
   /* SET of LABELS */
-  set_field_buffer(field[0], 0,"Lista Doblemente Enlazada:");
+  set_field_buffer(field[0], 0,"Listas Doblemente Enlazada:");
   field_opts_off(field[0], O_ACTIVE); /* This field is a static label */
   set_field_just(field[0], JUSTIFY_CENTER); /* Center Justification */
   /* Field for show the lists */
   field_opts_off(field[1], O_ACTIVE); /* This field is a static label */
+  field_opts_off(field[2], O_ACTIVE); /* This field is a static label */
   //set_field_just(field[0], JUSTIFY_CENTER); /* Center Justification */
   /* Common LABELS */
-  set_field_buffer(field[2], 0,"Insertar:");
-  field_opts_off(field[2], O_ACTIVE);
-  set_field_buffer(field[4], 0,"Eliminar:");
-  field_opts_off(field[4], O_ACTIVE);
+  set_field_buffer(field[3], 0,"Insertar:");
+  field_opts_off(field[3], O_ACTIVE);
+  set_field_buffer(field[5], 0,"Eliminar:");
+  field_opts_off(field[5], O_ACTIVE);
+
+  //field_opts_off(field[6], O_ACTIVE);
   /* Initialize Data Estructures */
   // Declaraci�n de una lista de cadenas:
 
@@ -573,6 +620,19 @@ WINDOW *charge_listad_win(WINDOW * local_win){
       iLista1.Insertar("60");
       iLista1.Insertar("70");
       iLista1.Insertar("80");
+  }
+
+  if(iLista2.ListaVacia())
+  {
+      // Inserci�n de algunos valores, creando una lista ordenada:
+      iLista2.Insertar("10");
+      iLista2.Insertar("20");
+      iLista2.Insertar("30");
+      iLista2.Insertar("40");
+      iLista2.Insertar("50");
+      iLista2.Insertar("60");
+      //iLista2.Insertar("");
+      iLista2.Insertar("81");
   }
   //lista_output = "";
   //ListaCad.ParaCada(Mostrar);
@@ -608,9 +668,27 @@ WINDOW *charge_listad_win(WINDOW * local_win){
 	{
     listad1_output = "";
     iLista1.ParaCada(Mostrard1);
-    //set_field_fore(field[1], COLOR_PAIR(2));
+    iLista1.ParaCada(Mayord1);
     set_field_buffer(field[1], 0, &listad1_output[0]);
-    printw("Debug: ch = %d",ch);
+
+    listad2_output = "";
+    iLista2.ParaCada(Mostrard2);
+    set_field_buffer(field[2], 0, &listad2_output[0]);
+
+    resultado_output ="";
+    resultado_output.append("El 1 numero mayor de lista1 es: ");
+
+
+    temp.clear(); temp.str("");
+    numero_mayor_iLista1 = -1;
+    iLista1.ParaCada(Mayord1);
+    iLista2.ParaCada(Buscar);
+    temp << numero_mayor_iLista1;
+    resultado_output.append(temp.str());
+    resultado_output.append(".");
+    set_field_buffer(field[7], 0, &resultado_output[0]);
+
+    //printw("Debug: ch = %d",ch);
     switch(ch)
 		{	case KEY_DOWN:
 				/* Go to next field */
@@ -628,31 +706,65 @@ WINDOW *charge_listad_win(WINDOW * local_win){
         // Or the current field buffer won't be sync with what is displayed
         form_driver(my_form, REQ_NEXT_FIELD);
         form_driver(my_form, REQ_PREV_FIELD);
-        move(LINES-3, 2);
+        //move(LINES-3, 16);
 
         //printw("%s", trim_whitespaces(field_buffer(field[3], 0)));
-        if (strlen(trim_whitespaces(field_buffer(field[3], 0))) != 0 ){
-          iLista1.Insertar(trim_whitespaces(field_buffer(field[3], 0)));
-          set_field_buffer(field[3], 0,"");
+        if (strlen(trim_whitespaces(field_buffer(field[4], 0))) != 0 ){
+          iLista1.Insertar(trim_whitespaces(field_buffer(field[4], 0)));
+          set_field_buffer(field[4], 0,"");
         }
-        if (strlen(trim_whitespaces(field_buffer(field[5], 0))) != 0 ){
-          iLista1.Borrar(trim_whitespaces(field_buffer(field[5], 0)));
-          set_field_buffer(field[5], 0,"");
+        if (strlen(trim_whitespaces(field_buffer(field[6], 0))) != 0 ){
+          iLista1.Borrar(trim_whitespaces(field_buffer(field[6], 0)));
+          set_field_buffer(field[6], 0,"");
         }
         listad1_output = "";
         iLista1.ParaCada(Mostrard1);
-        set_field_buffer(field[1], 0, &lista_output[0]);
+        set_field_buffer(field[1], 0, &listad1_output[0]);
+
+        resultado_output ="";
+        resultado_output.append("El 2 numero mayor de lista1 es: ");
+
+        temp.clear(); temp.str("");
+        numero_mayor_iLista1 = -1;
+        iLista1.ParaCada(Mayord1);
+        iLista2.ParaCada(Buscar);
+        temp << numero_mayor_iLista1;
+        resultado_output.append(temp.str());
+        resultado_output.append(".");
+        set_field_buffer(field[7], 0, &resultado_output[0]);
+
       break;
 			default:
 				/* If this is a normal character, it gets */
 				/* Printed				  */
 				form_driver(my_form, ch);
-
 			break;
 		}
     listad1_output = "";
     iLista1.ParaCada(Mostrard1);
     set_field_buffer(field[1], 0, &listad1_output[0]);
+
+    resultado_output.clear();
+    resultado_output.append("El numero mayor de lista1 es: ");
+
+    temp.clear(); temp.str("");
+    numero_mayoryexiste.clear();
+    numero_mayor_iLista1 = -1;
+    iLista1.ParaCada(Mayord1);
+    iLista2.ParaCada(Buscar);
+    temp << numero_mayor_iLista1;
+    resultado_output.append(temp.str());
+    //if (numero_mayor_iLista1 == -1)
+      //numero_mayoryexiste.append(" El numero no existe en la lista2");
+
+    if (numero_mayoryexiste == "")
+         resultado_output.append(" El numero no existe en la lista2");
+      else
+         resultado_output.append(numero_mayoryexiste);
+    resultado_output.append(".");
+    set_field_buffer(field[7], 0, &resultado_output[0]);
+
+    numero_mayor_iLista1 = -1;
     update_panels();
     doupdate();
 	}

@@ -39,6 +39,8 @@ class Cadena {
       return strcmp(cadena, c.cadena) > 0;
    }
    bool operator<=(const Cadena &c) const {
+    //  if(_wtoi(cadena))
+    //    return 0;
       return strcmp(cadena, c.cadena) <= 0;
    }
    bool operator>=(const Cadena &c) const {
