@@ -42,6 +42,7 @@ class lista {
     void Anterior();
     void Primero();
     void Ultimo();
+    void ParaCada(void (*func)(TIPO&));
     bool Actual() { return plista != NULL; }
     TIPO ValorActual() { return plista->valor; }
 
@@ -151,6 +152,32 @@ template<class TIPO>
 void lista<TIPO>::Ultimo()
 {
    while(plista && plista->siguiente) plista = plista->siguiente;
+}
+
+// Aplicar una funci�n a cada nodo de la lista:
+template<class TIPO>
+void lista<TIPO>::ParaCada(void (*func)(TIPO&))
+{
+  int orden = 1;
+  nodo<TIPO> *pnodo;
+  if(orden == ASCENDENTE) {
+     Primero();
+     pnodo = plista;
+     while(pnodo) {
+        func(pnodo->valor);
+        //cout << pnodo->valor << "-> ";
+        pnodo = pnodo->siguiente;
+     }
+  }
+  else {
+     Ultimo();
+     pnodo = plista;
+     while(pnodo) {
+        cout << pnodo->valor << "-> ";
+        pnodo = pnodo->anterior;
+     }
+  }
+  //cout << endl;
 }
 
 #endif

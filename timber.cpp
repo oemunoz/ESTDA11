@@ -20,9 +20,11 @@
 using namespace std;
 // Lista output
 std::string lista_output = "";
+std::string listad1_output = "";
+std::string listad2_output = "";
 
 Lista<Cadena> ListaCad;
-lista<int> iLista1;
+lista<Cadena> iLista1;
 
 // Definided by panel hide.
 typedef struct _PANEL_DATA {
@@ -36,6 +38,22 @@ void Mostrar(DATO &d)
 {
   lista_output.append(d.Lee());
   lista_output.append("|->|");
+  //printw(":%s",d.Lee());
+}
+
+template<class TIPO>
+void Mostrard1(TIPO &d)
+{
+  listad1_output.append(d.Lee());
+  listad1_output.append("|<->|");
+  //printw(":%s",d.Lee());
+}
+
+template<class TIPO>
+void Mostrard2(TIPO &d)
+{
+  listad2_output.append(d.Lee());
+  listad2_output.append("|<->|");
   //printw(":%s",d.Lee());
 }
 
@@ -154,7 +172,7 @@ int main()
       break;
       case 97: // Case "a"
           printw("Debug: ch = %d and my_choice = %d",ch, my_choice);
-          my_wins[0] = charge_lista_win(my_wins[0]);
+          my_wins[0] = charge_listad_win(my_wins[0]);
       break;
       case 10:
         my_choice = item_index(current_item(timber_menu));
@@ -511,7 +529,7 @@ WINDOW *charge_listad_win(WINDOW * local_win){
 
   getmaxyx(local_win, height, width);
   /* Initialize the fields */
-  int reserv_to_cadena=4;
+  int reserv_to_cadena=2;
   /* (numero de lineas, ancho o characters, altura, ) */
   //field[0] = new_field(2, width-1, reserv_to_cadena, 1, 8, 8);
   field[0] = new_field(1, 27, 1, 1, 8, 8);
@@ -530,7 +548,7 @@ WINDOW *charge_listad_win(WINDOW * local_win){
   }
 
   /* SET of LABELS */
-  set_field_buffer(field[0], 0,"Lista Simplemente Enlazada:");
+  set_field_buffer(field[0], 0,"Lista Doblemente Enlazada:");
   field_opts_off(field[0], O_ACTIVE); /* This field is a static label */
   set_field_just(field[0], JUSTIFY_CENTER); /* Center Justification */
   /* Field for show the lists */
@@ -547,14 +565,14 @@ WINDOW *charge_listad_win(WINDOW * local_win){
   if(iLista1.ListaVacia())
   {
       // Inserci�n de algunos valores, creando una lista ordenada:
-      iLista1.Insertar(10);
-      iLista1.Insertar(20);
-      iLista1.Insertar(30);
-      iLista1.Insertar(40);
-      iLista1.Insertar(50);
-      iLista1.Insertar(60);
-      iLista1.Insertar(70);
-      iLista1.Insertar(80);
+      iLista1.Insertar("10");
+      iLista1.Insertar("20");
+      iLista1.Insertar("30");
+      iLista1.Insertar("40");
+      iLista1.Insertar("50");
+      iLista1.Insertar("60");
+      iLista1.Insertar("70");
+      iLista1.Insertar("80");
   }
   //lista_output = "";
   //ListaCad.ParaCada(Mostrar);
@@ -580,13 +598,18 @@ WINDOW *charge_listad_win(WINDOW * local_win){
   mvprintw(LINES - 2, 0, "Use UP, DOWN arrow keys to switch between fields");
   refresh();
 
+  /*listad1_output = "";
+  iLista1.ParaCada(Mostrard);
+  //set_field_fore(field[1], COLOR_PAIR(2));
+  set_field_buffer(field[1], 0, &listad1_output[0]);
+
   /* Loop through to get user requests */
 	while((ch = wgetch(local_win)) != KEY_F(1))
 	{
-    lista_output = "";
-    ListaCad.ParaCada(Mostrar);
+    listad1_output = "";
+    iLista1.ParaCada(Mostrard1);
     //set_field_fore(field[1], COLOR_PAIR(2));
-    set_field_buffer(field[1], 0, &lista_output[0]);
+    set_field_buffer(field[1], 0, &listad1_output[0]);
     printw("Debug: ch = %d",ch);
     switch(ch)
 		{	case KEY_DOWN:
@@ -609,15 +632,15 @@ WINDOW *charge_listad_win(WINDOW * local_win){
 
         //printw("%s", trim_whitespaces(field_buffer(field[3], 0)));
         if (strlen(trim_whitespaces(field_buffer(field[3], 0))) != 0 ){
-          iLista1.Insertar(atoi(trim_whitespaces(field_buffer(field[3], 0))));
+          iLista1.Insertar(trim_whitespaces(field_buffer(field[3], 0)));
           set_field_buffer(field[3], 0,"");
         }
         if (strlen(trim_whitespaces(field_buffer(field[5], 0))) != 0 ){
-          iLista1.Borrar(atoi(trim_whitespaces(field_buffer(field[5], 0))));
+          iLista1.Borrar(trim_whitespaces(field_buffer(field[5], 0)));
           set_field_buffer(field[5], 0,"");
         }
-        //lista_output = "";
-        ListaCad.ParaCada(Mostrar);
+        listad1_output = "";
+        iLista1.ParaCada(Mostrard1);
         set_field_buffer(field[1], 0, &lista_output[0]);
       break;
 			default:
@@ -627,9 +650,9 @@ WINDOW *charge_listad_win(WINDOW * local_win){
 
 			break;
 		}
-    lista_output = "";
-    ListaCad.ParaCada(Mostrar);
-    set_field_buffer(field[1], 0, &lista_output[0]);
+    listad1_output = "";
+    iLista1.ParaCada(Mostrard1);
+    set_field_buffer(field[1], 0, &listad1_output[0]);
     update_panels();
     doupdate();
 	}
