@@ -1,10 +1,11 @@
 # Timber
 
-Set of basic examples of programs.
+Set of basic examples and workshops programs around C++.
 
 ## Installation
 
-TODO: Describe the installation process
+Tested on gcc version 4.8.4 and libncurses5:5.9+20140118
+(Yes the compiler from Mars.)
 
 ## Usage
 
@@ -20,12 +21,12 @@ g++ timber.cpp -o timber.bin -lpanel -lncurses -lmenu -lform
 
 ## History
 
-TODO: Write history
+160415: First workshop on ESTDA11.
 
 ## Credits
 
-TODO: Write credits
+All the hard work is from [http://c.conclase.net/], I try to keep the original source but this is not always easy.
 
 ## License
 
-TODO: Write license
+The source is under terms of the MIT license.
